@@ -5,8 +5,8 @@
 require(metafor)
 
 # Read data
-s_table_2 <- read.csv2("C:/Users/Gustav Nilsonne/Box Sync/Gustavs_arbete/Pek/2017_LPsych_letter_Hoogman/s_table_2.csv", skip = 1)
-s_table_4 <- read.csv2("C:/Users/Gustav Nilsonne/Box Sync/Gustavs_arbete/Pek/2017_LPsych_letter_Hoogman/s_table_4.csv", skip = 1)
+s_table_2 <- read.csv2("s_table_2.csv", skip = 1)
+s_table_4 <- read.csv2("s_table_4.csv", skip = 1)
 
 names(s_table_2) <- c(
   "Cohort",
@@ -53,7 +53,7 @@ points(ICV ~ IQ, data = s_table_4[s_table_4$Dx == "Cases", ], col = "red", cex =
 legend("bottomleft", col = c("blue", "red"), legend = c("Controls", "Cases"), pch = 1)
 
 # Perform meta-regression by brain region
-# THis involves making a new data frame for each region in the format suitable for the metafor package
+# This involves making a new data frame for each region in the format suitable for the metafor package
 accumbens <- data.frame(study = c(1:23),
                   source = s_table_4$Site[s_table_4$Dx == "Cases"],
                   n1i = s_table_4$n[s_table_4$Dx == "Cases"],
@@ -71,6 +71,7 @@ res_accumbens_IQ <- rma(accumbens, mods = ~ delta_IQ, slab = source)
 forest(res_accumbens_IQ, main = "Accumbens, with meta-regression")
 res_accumbens_IQ
 
+# Check meta-regression plot
 IQ_range <- -18:2
 preds <- predict(res_accumbens_IQ, newmods = IQ_range)
 plot(accumbens$delta_IQ, accumbens$yi, cex=accumbens$vi*60, frame.plot = F, xlab = "delta IQ", ylab = "SMD", main = "Accumbens, meta-regression")
@@ -151,22 +152,22 @@ forest(res_pallidum_IQ, main = "pallidum, with meta-regression")
 res_pallidum_IQ
 
 
-putamen <- data.frame(study = c(1:23),
+hippocampus <- data.frame(study = c(1:23),
                           source = s_table_4$Site[s_table_4$Dx == "Cases"],
                           n1i = s_table_4$n[s_table_4$Dx == "Cases"],
-                          m1i = s_table_4$Putamen[s_table_4$Dx == "Cases"],
-                          sd1i = s_table_4$Putamen_SD[s_table_4$Dx == "Cases"],
+                          m1i = s_table_4$Hippocampus[s_table_4$Dx == "Cases"],
+                          sd1i = s_table_4$Hippocampus_SD[s_table_4$Dx == "Cases"],
                           n2i = s_table_4$n[s_table_4$Dx == "Controls"],
-                          m2i = s_table_4$Putamen[s_table_4$Dx == "Controls"],
-                          sd2i = s_table_4$Putamen_SD[s_table_4$Dx == "Controls"],
+                          m2i = s_table_4$Hippocampus[s_table_4$Dx == "Controls"],
+                          sd2i = s_table_4$Hippocampus_SD[s_table_4$Dx == "Controls"],
                           delta_IQ = s_table_4$IQ[s_table_4$Dx == "Controls"] - s_table_4$IQ[s_table_4$Dx == "Cases"])
-putamen <- escalc(measure="SMD", m1i=m1i, sd1i=sd1i, n1i=n1i, m2i=m2i, sd2i=sd2i, n2i=n2i, data=putamen)
-res_putamen <- rma(putamen, slab = source)
-forest(res_putamen, main = "putamen, without meta-regression")
-res_putamen
-res_putamen_IQ <- rma(putamen, mods = ~ delta_IQ, slab = source)
-forest(res_putamen_IQ, main = "putamen, with meta-regression")
-res_putamen_IQ
+hippocampus <- escalc(measure="SMD", m1i=m1i, sd1i=sd1i, n1i=n1i, m2i=m2i, sd2i=sd2i, n2i=n2i, data=hippocampus)
+res_hippocampus <- rma(hippocampus, slab = source)
+forest(res_hippocampus, main = "hippocampus, without meta-regression")
+res_hippocampus
+res_hippocampus_IQ <- rma(hippocampus, mods = ~ delta_IQ, slab = source)
+forest(res_hippocampus_IQ, main = "hippocampus, with meta-regression")
+res_hippocampus_IQ
 
 
 thalamus <- data.frame(study = c(1:23),
@@ -186,26 +187,48 @@ res_thalamus_IQ <- rma(thalamus, mods = ~ delta_IQ, slab = source)
 forest(res_thalamus_IQ, main = "thalamus, with meta-regression")
 res_thalamus_IQ
 
+
+icv <- data.frame(study = c(1:23),
+                       source = s_table_4$Site[s_table_4$Dx == "Cases"],
+                       n1i = s_table_4$n[s_table_4$Dx == "Cases"],
+                       m1i = s_table_4$ICV[s_table_4$Dx == "Cases"],
+                       sd1i = s_table_4$ICV_SD[s_table_4$Dx == "Cases"],
+                       n2i = s_table_4$n[s_table_4$Dx == "Controls"],
+                       m2i = s_table_4$ICV[s_table_4$Dx == "Controls"],
+                       sd2i = s_table_4$ICV_SD[s_table_4$Dx == "Controls"],
+                       delta_IQ = s_table_4$IQ[s_table_4$Dx == "Controls"] - s_table_4$IQ[s_table_4$Dx == "Cases"])
+icv <- escalc(measure="SMD", m1i=m1i, sd1i=sd1i, n1i=n1i, m2i=m2i, sd2i=sd2i, n2i=n2i, data=icv)
+res_icv <- rma(icv, slab = source)
+forest(res_icv, main = "icv, without meta-regression")
+res_icv
+res_icv_IQ <- rma(icv, mods = ~ delta_IQ, slab = source)
+forest(res_icv_IQ, main = "icv, with meta-regression")
+res_icv_IQ
+
+
 # Write results
-out <- data.frame(Area = c("Accumbens", "Amygdala", "Caudate", "Pallidum", "Putamen", "Thalamus"),
+out <- data.frame(Area = c("Accumbens", "Amygdala", "Caudate", "Pallidum", "Hippocampus", "Thalamus", "ICV"),
                   Unadjusted_SMD_confint = c(paste(round(res_accumbens$b, 2), "[", round(res_accumbens$ci.lb, 2), round(res_accumbens$ci.ub, 2), "]"),
                                  paste(round(res_amygdala$b, 2), "[", round(res_amygdala$ci.lb, 2), round(res_amygdala$ci.ub, 2), "]"),
                                  paste(round(res_caudate$b, 2), "[", round(res_caudate$ci.lb, 2), round(res_caudate$ci.ub, 2), "]"),
                                  paste(round(res_pallidum$b, 2), "[", round(res_pallidum$ci.lb, 2), round(res_pallidum$ci.ub, 2), "]"),
-                                 paste(round(res_putamen$b, 2), "[", round(res_putamen$ci.lb, 2), round(res_putamen$ci.ub, 2), "]"),
-                                 paste(round(res_thalamus$b, 2), "[", round(res_thalamus$ci.lb, 2), round(res_thalamus$ci.ub, 2), "]")),
+                                 paste(round(res_hippocampus$b, 2), "[", round(res_hippocampus$ci.lb, 2), round(res_hippocampus$ci.ub, 2), "]"),
+                                 paste(round(res_thalamus$b, 2), "[", round(res_thalamus$ci.lb, 2), round(res_thalamus$ci.ub, 2), "]"),
+                                 paste(round(res_icv$b, 2), "[", round(res_icv$ci.lb, 2), round(res_icv$ci.ub, 2), "]")),
                   Adjusted_SMD_confint = c(paste(round(res_accumbens_IQ$b[1], 2), "[", round(res_accumbens_IQ$ci.lb[1], 2), round(res_accumbens_IQ$ci.ub[1], 2), "]"),
                                            paste(round(res_amygdala_IQ$b[1], 2), "[", round(res_amygdala_IQ$ci.lb[1], 2), round(res_amygdala_IQ$ci.ub[1], 2), "]"),
                                            paste(round(res_caudate_IQ$b[1], 2), "[", round(res_caudate_IQ$ci.lb[1], 2), round(res_caudate_IQ$ci.ub[1], 2), "]"),
                                            paste(round(res_pallidum_IQ$b[1], 2), "[", round(res_pallidum_IQ$ci.lb[1], 2), round(res_pallidum_IQ$ci.ub[1], 2), "]"),
-                                           paste(round(res_putamen_IQ$b[1], 2), "[", round(res_putamen_IQ$ci.lb[1], 2), round(res_putamen_IQ$ci.ub[1], 2), "]"),
-                                           paste(round(res_thalamus_IQ$b[1], 2), "[", round(res_thalamus_IQ$ci.lb[1], 2), round(res_thalamus_IQ$ci.ub[1], 2), "]")),
+                                           paste(round(res_hippocampus_IQ$b[1], 2), "[", round(res_hippocampus_IQ$ci.lb[1], 2), round(res_hippocampus_IQ$ci.ub[1], 2), "]"),
+                                           paste(round(res_thalamus_IQ$b[1], 2), "[", round(res_thalamus_IQ$ci.lb[1], 2), round(res_thalamus_IQ$ci.ub[1], 2), "]"),
+                                           paste(round(res_icv_IQ$b[1], 2), "[", round(res_icv_IQ$ci.lb[1], 2), round(res_icv_IQ$ci.ub[1], 2), "]")),
                   Delta_IQ_confint = c(paste(round(res_accumbens_IQ$b[2], 2), "[", round(res_accumbens_IQ$ci.lb[2], 2), round(res_accumbens_IQ$ci.ub[2], 2), "]"),
                                        paste(round(res_amygdala_IQ$b[2], 2), "[", round(res_amygdala_IQ$ci.lb[2], 2), round(res_amygdala_IQ$ci.ub[2], 2), "]"),
                                        paste(round(res_caudate_IQ$b[2], 2), "[", round(res_caudate_IQ$ci.lb[2], 2), round(res_caudate_IQ$ci.ub[2], 2), "]"),
                                        paste(round(res_pallidum_IQ$b[2], 2), "[", round(res_pallidum_IQ$ci.lb[2], 2), round(res_pallidum_IQ$ci.ub[2], 2), "]"),
-                                       paste(round(res_putamen_IQ$b[2], 2), "[", round(res_putamen_IQ$ci.lb[2], 2), round(res_putamen_IQ$ci.ub[2], 2), "]"),
-                                       paste(round(res_thalamus_IQ$b[2], 2), "[", round(res_thalamus_IQ$ci.lb[2], 2), round(res_thalamus_IQ$ci.ub[2], 2), "]")))
+                                       paste(round(res_hippocampus_IQ$b[2], 2), "[", round(res_hippocampus_IQ$ci.lb[2], 2), round(res_hippocampus_IQ$ci.ub[2], 2), "]"),
+                                       paste(round(res_thalamus_IQ$b[2], 2), "[", round(res_thalamus_IQ$ci.lb[2], 2), round(res_thalamus_IQ$ci.ub[2], 2), "]"),
+                                       paste(round(res_icv_IQ$b[2], 2), "[", round(res_icv_IQ$ci.lb[2], 2), round(res_icv_IQ$ci.ub[2], 2), "]")))
 
 write.table(out, file = "IQ_correction.txt", sep = "\t", row.names = F)
                   
