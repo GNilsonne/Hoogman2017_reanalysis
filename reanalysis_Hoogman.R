@@ -43,6 +43,10 @@ s_table_4$IQ <- as.integer(substr(s_table_2$IQ, 1, 3))
 s_table_4$IQ_SD <- as.integer(as.character(IQ2$X2))
 s_table_4$n <- as.integer(as.character(IQ2$X3))
 
+# Switch IQ between cases and controls - Hoogman et al. have corrected made a mixup
+s_table_4$IQ <- s_table_4$IQ[c(2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22, 21, 24, 23, 26, 25, 28, 27, 30, 29, 32, 31, 34, 33, 36, 35, 38, 37, 40, 39, 42, 41, 44, 43, 46, 45)]
+s_table_4$IQ_SD <- s_table_4$IQ_SD[c(2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15, 18, 17, 20, 19, 22, 21, 24, 23, 26, 25, 28, 27, 30, 29, 32, 31, 34, 33, 36, 35, 38, 37, 40, 39, 42, 41, 44, 43, 46, 45)]
+
 # Test plots to verify that data are accessible
 plot(Accumbens ~ IQ, data = s_table_4[s_table_4$Dx == "Controls", ], col = "blue", cex = sqrt(s_table_4[s_table_4$Dx == "Controls", ]$n/pi), frame.plot = F, xlim = c(90, 120), ylim = c(400, 900), main = "Accumbens", ylab = "Volume (mm3)")
 points(Accumbens ~ IQ, data = s_table_4[s_table_4$Dx == "Cases", ], col = "red", cex = sqrt(s_table_4[s_table_4$Dx == "Cases", ]$n/pi))
@@ -72,7 +76,7 @@ forest(res_accumbens_IQ, main = "Accumbens, with meta-regression")
 res_accumbens_IQ
 
 # Check meta-regression plot
-IQ_range <- -18:2
+IQ_range <- -2:18
 preds <- predict(res_accumbens_IQ, newmods = IQ_range)
 plot(accumbens$delta_IQ, accumbens$yi, cex=accumbens$vi*60, frame.plot = F, xlab = "delta IQ", ylab = "SMD", main = "Accumbens, meta-regression")
 lines(IQ_range, preds$pred)
